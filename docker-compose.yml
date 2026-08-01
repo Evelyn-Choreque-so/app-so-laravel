@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  laravel-app:
+    build: .
+    container_name: laravel-app
+    restart: always
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    command: /usr/bin/supervisord -c /app/supervisord.conf
