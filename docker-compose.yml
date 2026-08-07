@@ -1,11 +1,44 @@
 version: '3.8'
+
 services:
-  laravel-app:
-    build: .
-    container_name: laravel-app
-    restart: always
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: app-so-laravel
+    container_name: app
+    restart: unless-stopped
+    tty: true
     ports:
       - "8000:8000"
     volumes:
-      - .:/app
-    command: /usr/bin/supervisord -c /app/supervisord.conf
+      - ./:/var/www/html
+    networks:
+      - laravel-net
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: laravel
+      MYSQL_ROOT_PASSWORD: laravel123
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: laravel123
+    ports:
+      - "3306:3306"
+    networks:
+      - laravel-net
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - laravel-net
+
+networks:
+  laravel-net:
+    driver: bridge
